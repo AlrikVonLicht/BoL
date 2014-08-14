@@ -1,4 +1,4 @@
-_G.Gnar_Version = 1.0
+_G.Gnar_Version = 1.01
 --[[
 
 
@@ -9,11 +9,16 @@ _G.Gnar_Version = 1.0
 		88. ~8~ 88  V888 88   88 88 `88.
 		 Y888P  VP   V8P YP   YP 88   YD
 
-	Script - Gnar - The Missing Link 1.0a
+	Script - Gnar - The Missing Link 1.01
 
 	Changelog:
 		1.0a
 			- Pre-Release
+
+		1.01
+			- Official Release (Champion Released)
+
+    Modified by alrik94 for temporary fix
 ]]--
 
 if myHero.charName ~= "Gnar" then return end
@@ -52,7 +57,7 @@ if lib_downloadNeeded then return end
 
 local script_downloadName = "Gnar - The Missing Link"
 local script_downloadHost = "raw.github.com"
-local script_downloadPath = "/RoachxD/BoL_Scripts/master/Gnar%20-%20The%20Missing%20Link.lua".."?rand="..math.random(1, 10000)
+local script_downloadPath = "/RoachxD/BoL_Scripts/master/Gnar%20-%20The%20Missing%20Link.lua" .. "?rand=" .. math.random(1, 10000)
 local script_downloadUrl = "https://" .. script_downloadHost .. script_downloadPath
 local script_filePath = SCRIPT_PATH .. GetCurrentEnv().FILE_NAME .. ".lua"
 
@@ -90,7 +95,7 @@ function OnLoad()
 	Variables()
 	Menu()
 
-	HWID = Base64Encode(tostring(os.getenv("PROCESSOR_IDENTIFIER") .. os.getenv("USERNAME") .. os.getenv("COMPUTERNAME") .. os.getenv("PROCESSOR_LEVEL") .. os.getenv("PROCESSOR_REVISION")))
+	--HWID = Base64Encode(tostring(os.getenv("PROCESSOR_IDENTIFIER") .. os.getenv("USERNAME") .. os.getenv("COMPUTERNAME") .. os.getenv("PROCESSOR_LEVEL") .. os.getenv("PROCESSOR_REVISION")))
 	--UpdateWeb(true, (string.gsub(script_downloadName, "[^0-9A-Za-z]", "")), 5, HWID)
 
 	if heroManager.iCount < 10 then -- borrowed from Sidas Auto Carry, modified to 3v3
@@ -173,7 +178,9 @@ function Variables()
 		mega = { name = "GNAR!",			range =  590, delay = 0.5, speed = 0, width = 000, ready = false, pos = nil, dmg = 0				 }
 	}
 
-	Wards = 
+	SpellI = { name = "SummonerDot",		range =  600,									   ready = false,			 dmg = 0, variable = nil }
+
+    Wards = 
 	{
 		TrinketWard	= { ready = false },
 		RubySightStone	= { slot = nil, ready = false },
@@ -181,8 +188,6 @@ function Variables()
 		SightWard	= { slot = nil, ready = false },
 		VisionWard	= { slot = nil, ready = false }
 	}
-	
-	SpellI = { name = "SummonerDot",		range =  600,									   ready = false,			 dmg = 0, variable = nil }
 
 	vPred = VPrediction()
 
@@ -252,14 +257,14 @@ function Variables()
 	enemyCount = 0
 	enemyTable = GetEnemyHeroes()
 
-	-- for i = 1, heroManager.iCount do
-		-- local champ = heroManager:GetHero(i)
+	--for i = 1, heroManager.iCount do
+	--	local champ = heroManager:GetHero(i)
 		
-		-- if champ.team ~= player.team then
-			-- enemyCount = enemyCount + 1
-			-- enemyTable[enemyCount] = { player = champ, indicatorText = "", damageGettingText = "", ultAlert = false, ready = true}
-		-- end
-	-- end
+	--	if champ.team ~= player.team then
+	--		enemyCount = enemyCount + 1
+	--		enemyTable[enemyCount] = { player = champ, indicatorText = "", damageGettingText = "", ultAlert = false, ready = true}
+	--	end
+	--end
 end
 
 function Menu()
@@ -897,25 +902,25 @@ function KillSteal()
 	for i = 1, enemyCount do
 		local enemy = enemyTable[i].player
 		if ValidTarget(enemy) and enemy.visible then
-			if enemy.health < SpellR.dmg and GnarMenu.ks.useR then
+			if enemy.health < SpellR.mega.dmg and GnarMenu.ks.useR then
 				CastR(enemy, 1, 1)
-			elseif enemy.health < SpellQ.dmg then
+			elseif enemy.health < SpellQ.mega.dmg and SpellP.enabled or enemy.health < SpellQ.mini.dmg then
 				CastQ(enemy)
-			elseif enemy.health < SpellW.dmg and SpellP.enabled then
+			elseif enemy.health < SpellW.mega.dmg and SpellP.enabled then
 				CastW(enemy)
-			elseif enemy.health < SpellE.dmg then
+			elseif enemy.health < SpellE.mega.dmg and SpellP.enabled or enemy.health < SpellE.mini.dmg then
 				CastE(enemy)
-			elseif enemy.health < SpellQ.dmg + SpellR.dmg and SpellP.enabled and GnarMenu.ks.useR then
+			elseif enemy.health < SpellQ.mega.dmg + SpellR.mega.dmg and SpellP.enabled and GnarMenu.ks.useR then
 				CastQ(enemy)
-			elseif enemy.health < SpellW.dmg + SpellR.dmg and SpellP.enabled and GnarMenu.ks.useR then
+			elseif enemy.health < SpellW.mega.dmg + SpellR.mega.dmg and SpellP.enabled and GnarMenu.ks.useR then
 				CastW(enemy)
-			elseif enemy.health < SpellE.dmg + SpellR.dmg and SpellP.enabled and GnarMenu.ks.useR then
+			elseif enemy.health < SpellE.mega.dmg + SpellR.mega.dmg and SpellP.enabled and GnarMenu.ks.useR then
 				CastE(enemy)
-			elseif enemy.health < SpellQ.dmg + SpellW.dmg + SpellR.dmg and SpellP.enabled and GnarMenu.ks.useR then
+			elseif enemy.health < SpellQ.mega.dmg + SpellW.mega.dmg + SpellR.mega.dmg and SpellP.enabled and GnarMenu.ks.useR then
 				CastE(enemy)
-			elseif enemy.health < SpellQ.dmg + SpellE.dmg + SpellR.dmg and SpellP.enabled and GnarMenu.ks.useR then
+			elseif enemy.health < SpellQ.mega.dmg + SpellE.mega.dmg + SpellR.mega.dmg and SpellP.enabled and GnarMenu.ks.useR then
 				CastE(enemy)
-			elseif enemy.health < SpellQ.dmg + SpellW.dmg + SpellR.dmg and SpellP.enabled and GnarMenu.ks.useR then
+			elseif enemy.health < SpellQ.mega.dmg + SpellW.mega.dmg + SpellR.mega.dmg and SpellP.enabled and GnarMenu.ks.useR then
 				CastE(enemy)
 			end
 
